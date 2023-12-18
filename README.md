@@ -43,7 +43,7 @@ On windows , we need to convert the files to unix mode. In the Windows Powershel
   ```bash
   docker-compose pull
   ```
- ```bash
+  ```bash
    docker-compose up
   ```
 ### Add dev account
