@@ -1,4 +1,4 @@
-# Freemium-Docker
+# Zetaris-Freemium-Docker
 This repo is for the docker image to run the zetaris-ui , zetaris-api the zetaris-server on your local machine.
 ## Prerequisites
 •	You have installed the latest version of Docker Desktop. -->https://docs.docker.com/get-docker/
