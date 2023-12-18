@@ -14,7 +14,7 @@ This repo is for the docker image to run the zetaris-ui , zetaris-api the zetari
     ```bash
     git clone https://github.com/zetaris/Freemium.git
     ```
-* Now we need Azure CLI to be installed on the local machine, you can install this by running the below command.
+* Now we need Azure CLI to be installed on the local machine.
 
 * For windows , use https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli
 
