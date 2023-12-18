@@ -1,10 +1,16 @@
-# QA-Docker
+# Freemium-Docker
 This repo is for the docker image to run the zetaris-ui , zetaris-api the zetaris-server on your local machine.
+## Prerequisites
+•	You have installed the latest version of Docker Desktop. -->https://docs.docker.com/get-docker/
+•	You have installed a Git client.  --> https://git-scm.com/downloads
+ For Windows users
+ •	Once you have installed docker , check these settings on WSL -->Check this link to confirm that docker is working on Windows https://learn.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers
+
+
 ## Setup
-* Get docker desktop and install on you machine https://www.docker.com/products/docker-desktop/ 
-* Pull the latest QA-DOCKER image for zetaris github repo
+* Pull the latest Freemium image for zetaris github repo
     ```bash
-    git clone https://github.com/zetaris/QA-Docker.git
+    git clone https://github.com/zetaris/Freemium.git
     ```
 * Now we need Azure CLI to be installed on the local machine, you can install this by running the below command.
 
@@ -27,7 +33,7 @@ This repo is for the docker image to run the zetaris-ui , zetaris-api the zetari
 ## Start docker
 
 ### Windows specific
-On windows , we need to convert the files to unix mode
+On windows , we need to convert the files to unix mode. In the Windows Powershell ,ensure that you are in the path of the cloned repo eg : C:\Users\john.doe\Freemium
 ```
 ./windows_convert.sh
 ```
@@ -58,19 +64,12 @@ So at the beginning, there will be some warnings  like below, this is ok if serv
 2023-10-19 21:28:32     Failed to connect to zetaris-server:10000
 ```
 ## Server
-The driver docker image seems not very stable, if the above warning keeps going, you may go to docker desktop console to restart it if it hangs
+The driver docker imagemight seems to fail if the images don't execute in the correct order, if the above warning keeps going, you may go to docker desktop console to restart it if it hangs
 You just need to restart the zetaris-server only until it starts successfully
 
-
-
-# To run db and solr only
+### Add dev account again in case you see an authentication error while logging in with the dev@account.com credentials
 ```
-docker-compose -f simple-docker-compose.yaml up
+docker-compose exec -it zetaris-db /scripts/generate_default_dev_users.sh
 ```
-## Add the dev account
-
-```
-docker-compose -f simple-docker-compose.yaml exec -it zetaris-db /scripts/generate_default_dev_users.sh
-```
-
+a user `dev@account.com` will be added and password is `password`
 
