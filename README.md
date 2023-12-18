@@ -1,10 +1,10 @@
 # Zetaris-Freemium-Docker
 This repo is for the docker image to run the zetaris-ui , zetaris-api the zetaris-server on your local machine.
 ## Prerequisites
-•	You have installed the latest version of Docker Desktop. -->https://docs.docker.com/get-docker/
-•	You have installed a Git client.  --> https://git-scm.com/downloads
- For Windows users
- •	Once you have installed docker , check these settings on WSL -->Check this link to confirm that docker is working on Windows https://learn.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers
+*•	You have installed the latest version of Docker Desktop. -->https://docs.docker.com/get-docker/
+*•	You have installed a Git client.  --> https://git-scm.com/downloads
+* For Windows users
+* •	Once you have installed docker , check these settings on WSL -->Check this link to confirm that docker is working on Windows https://learn.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers
 
 
 ## Setup
