@@ -16,13 +16,10 @@ This repo is for the docker image to run the zetaris-ui , zetaris-api the zetari
     ```
 * Now we need Azure CLI to be installed on the local machine, you can install this by running the below command.
 
-  ```bash
-  brew update && brew install azure-cli
-  ```
 * For windows , use https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli
 
 ## Login to azure docker repo
-* Login to Azure to get authenticated to zetregistry by running the commands below
+* Login to Azure to get authenticated to zetregistry by running the commands below in a Windows Powershell
 
     ```bash
     az login
