@@ -59,7 +59,7 @@ services:
 
   zetaris-api:
     image: zetaris/lightning-api:main-latest
-    entrypoint: bash /opt/lightning-api-2.3.5.0-SNAPSHOT/bin/lightning-api
+    entrypoint: bash /opt/lightning-api-2.3.4.0/bin/lightning-api
     restart: always
     depends_on:
       - zetaris-server 
