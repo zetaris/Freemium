@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-cp install.sql_bkp install.sql
-chmod +x  *.sql
-psql -c "CREATE DATABASE \"Adventureworks\";"
-psql -d Adventureworks < install.sql
