@@ -71,7 +71,6 @@ services:
       - ENCRYPTION_LOCAL_PRIVATE_KEY_PATH=/test_encryption/private_key.der
       - ENCRYPTION_LOCAL_PUBLIC_KEY_PATH=/test_encryption/public_key.der
       - ALLOWED_ORIGINS=http://localhost:9000;http://localhost:9001
-      - LIGHTNING_API_DEPLOY_MODE=internal
 
     ports:
       - '8888:8888'
