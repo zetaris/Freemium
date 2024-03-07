@@ -1,0 +1,102 @@
+Index: docker-compose.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/docker-compose.yml b/docker-compose.yml
+--- a/docker-compose.yml	(revision b6f8135eff32a531cb331d8598c075caa012554e)
++++ b/docker-compose.yml	(revision 949e6c36f2add4674986e05fe53ee55fc83028c6)
+@@ -62,7 +62,7 @@
+     entrypoint: bash /opt/lightning-api-2.3.4.0/bin/lightning-api
+     restart: always
+     depends_on:
+-      - zetaris-server 
++      - zetaris-server
+     environment:
+       - METASTORE_DATABASE_URL=jdbc:postgresql://zetaris-db:5432/metastore?user=admin&password=password
+       - AUDIT_LOG_DATABASE_URL=jdbc:postgresql://zetaris-db:5432/audit?user=admin&password=password
+@@ -83,8 +83,8 @@
+     entrypoint: bash /home/zetaris/lightning-gui/bin/start.sh
+     restart: always
+     depends_on:
+-      - zetaris-server 
+-      - zetaris-api 
++      - zetaris-server
++      - zetaris-api
+     ports:
+       - '9001:9001'
+     volumes:
+@@ -100,4 +100,56 @@
+       - NDP_DRIVER_PASSWORD=test_admin
+       - SHOW_BUILD_HASH=true
+ 
++  # Flask app
++  privateai:
++    image: zetaris/privateai:latest
++    command:  ["flask", "run", "-h", "0.0.0.0", "-p", "3001"]
++    env_file:
++      - .env
++    volumes:
++      - privateai:/app  # Mount your application code
++    ports:
++      - "3001:3001"  # Expose app port (adjust as needed)
++    environment:
++      - FLASK_APP=app.py  # Replace with your main Flask app file
++    depends_on:
++      - ollama
++      - opensearch
++
+ 
++  ollama:
++    image: ollama/ollama
++    ports:
++      - "11434:11434"  # Expose Olllama port
++    volumes:
++      - ollama:/root/.ollama  # Mount configuration directory (optional)
++    environment:
++      - gpus=all
++    container_name: ollama
++    pull_policy: always
++    tty: true
++    restart: unless-stopped
++    deploy:
++      resources:
++        reservations:
++          devices:
++            - driver: nvidia  ##make sure that Nvidia container toolkit is running and configured with docker runtime
++              count: 1
++              capabilities: [gpu]
++
++
++  # OpenSearch
++  opensearch:
++    image: opensearchproject/opensearch:2.11.0
++    ports:
++      - "9200:9200"  # Expose OpenSearch port
++    environment:
++      - discovery.type=single-node
++    volumes:
++      - opensearch-data:/usr/share/opensearch/data  # Persistent data volume
++
++
++volumes:
++  opensearch-data:  # Persistent data volume for OpenSearch
++  ollama:
++  privateai:
+Index: env
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/env b/env
+new file mode 100644
+--- /dev/null	(revision 949e6c36f2add4674986e05fe53ee55fc83028c6)
++++ b/env	(revision 949e6c36f2add4674986e05fe53ee55fc83028c6)
+@@ -0,0 +1,7 @@
++GITHUB_FILE_URL = "https://api.github.com/repos/zetaris/SilverLakehouse/contents/"
++GITHUB_TOKEN = "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"
++GITHUB_PULL_REQUEST_URL="https://api.github.com/repos/zetaris/SilverLakehouse/pulls"
++SQLDBM_AUTHORIZATION_CODE="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjlkYWY4Mjg5LTAzNTgtNGNiNC05MGVlLTRkYTAzMjdhZjY1NCIsIm5iZiI6MTcwMDYyMDk0NywiZXhwIjoxNzE2MjU5MzQ3LCJpYXQiOjE3MDA2MjA5NDcsImlzcyI6InNxbGRibS5jb20iLCJhdWQiOiJzcWxkYm0uY29tIn0.BhDukEeTzNhUgHCphgncT7oAo-tr_backHGiuqZ4QeE"
++WEB_APP_URL_OAUTH2CALLBACK="https://zetaris-genz.azurewebsites.net/oauth2callback"
++OPENSEARCH_HOST="opensearch"
++OLLAMA_HOST="ollama"

@@ -1,0 +1,7 @@
+GITHUB_FILE_URL = "https://api.github.com/repos/zetaris/SilverLakehouse/contents/"
+GITHUB_TOKEN = "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"
+GITHUB_PULL_REQUEST_URL="https://api.github.com/repos/zetaris/SilverLakehouse/pulls"
+SQLDBM_AUTHORIZATION_CODE="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjlkYWY4Mjg5LTAzNTgtNGNiNC05MGVlLTRkYTAzMjdhZjY1NCIsIm5iZiI6MTcwMDYyMDk0NywiZXhwIjoxNzE2MjU5MzQ3LCJpYXQiOjE3MDA2MjA5NDcsImlzcyI6InNxbGRibS5jb20iLCJhdWQiOiJzcWxkYm0uY29tIn0.BhDukEeTzNhUgHCphgncT7oAo-tr_backHGiuqZ4QeE"
+WEB_APP_URL_OAUTH2CALLBACK="https://zetaris-genz.azurewebsites.net/oauth2callback"
+OPENSEARCH_HOST="opensearch"
+OLLAMA_HOST="ollama"
