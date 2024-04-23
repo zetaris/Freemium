@@ -8,7 +8,8 @@ INSERT INTO ORGANISATION (
     NAME,
     ORGANISATION_ID,
     PHONE_NUMBER,
-    POST_CODE
+    POST_CODE,
+    SLUG,
 ) VALUES (
     23,
     'address',
@@ -19,7 +20,8 @@ INSERT INTO ORGANISATION (
     'Account',
     '1d0c220d',
     '03 0000 0000',
-    '3000'
+    '3000',
+    'ZET'
 );
 
 
