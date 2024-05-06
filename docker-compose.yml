@@ -20,7 +20,7 @@ services:
 
 
   zetaris-server:
-    image: zetaris/lightning-server:main-latest
+    image: zetregistry.azurecr.io/lightning-server:main-2.3.6.0-cca185fc3d3b2eb25c140b4a1b1691d7505d087a
     entrypoint: /home/zetaris/lightning/bin/start.sh
     restart: always
     depends_on:
@@ -58,8 +58,8 @@ services:
         target: /home/zetaris/lightning/bin/start.sh
 
   zetaris-api:
-    image: zetaris/lightning-api:main-latest
-    entrypoint: bash /opt/lightning-api-2.3.6.0-SNAPSHOT/bin/lightning-api
+    image: zetregistry.azurecr.io/lightning-api:main-2.3.6.0-3dd5ac505bea2484895413d6eaafdd22813b99ef
+    entrypoint: bash /opt/lightning-api-2.3.6.0/bin/lightning-api
     restart: always
     depends_on:
       - zetaris-server 
@@ -79,7 +79,7 @@ services:
       - ./lightning/api/test_encryption:/test_encryption
 
   zetaris-gui:
-    image: zetaris/lightning-gui:main-latest
+    image: zetregistry.azurecr.io/lightning-gui:main-2.3.6.0-8a069689ff8beb26dc032634660007773984ec73
     entrypoint: bash /home/zetaris/lightning-gui/bin/start.sh
     restart: always
     depends_on:
@@ -100,4 +100,55 @@ services:
       - NDP_DRIVER_PASSWORD=test_admin
       - SHOW_BUILD_HASH=true
 
-
+  privateai:
+    image: zetaris/privateai:latest
+    command:  ["flask", "run", "-h", "0.0.0.0", "-p", "3001"]
+    env_file:
+      - .env
+    volumes:
+      - privateai:/app  # Mount your application code
+    ports:
+      - "3001:3001"  # Expose app port (adjust as needed)
+    environment:
+      - FLASK_APP=app.py  # Replace with your main Flask app file
+    depends_on:
+      - ollama
+      - opensearch
+ 
+ 
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"  # Expose Olllama port
+    volumes:
+      - ollama:/root/.ollama  # Mount configuration directory (optional)
+    environment:
+      - gpus=all
+    container_name: ollama
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia  ##make sure that Nvidia container toolkit is running and configured with docker runtime
+              count: 1
+              capabilities: [gpu]
+ 
+ 
+  # OpenSearch
+  opensearch:
+    image: opensearchproject/opensearch:2.11.0
+    ports:
+      - "9200:9200"  # Expose OpenSearch port
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data  # Persistent data volume
+ 
+ 
+volumes:
+  opensearch-data:  # Persistent data volume for OpenSearch
+  ollama:
+  privateai:
