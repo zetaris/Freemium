@@ -128,13 +128,6 @@ services:
     pull_policy: always
     tty: true
     restart: unless-stopped
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia  ##make sure that Nvidia container toolkit is running and configured with docker runtime
-              count: 1
-              capabilities: [gpu]
  
  
   # OpenSearch
