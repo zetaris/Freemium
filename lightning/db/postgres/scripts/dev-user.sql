@@ -9,7 +9,7 @@ INSERT INTO ORGANISATION (
     ORGANISATION_ID,
     PHONE_NUMBER,
     POST_CODE,
-    SLUG,
+    SLUG
 ) VALUES (
     23,
     'address',
