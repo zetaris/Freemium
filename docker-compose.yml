@@ -139,7 +139,18 @@ services:
       - discovery.type=single-node
     volumes:
       - opensearch-data:/usr/share/opensearch/data  # Persistent data volume
- 
+
+  # Digiavatar
+  digiavatar:
+    image: zetaris/digivatar:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - gpus=all
+    container_name : digiavatar
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
  
 volumes:
   opensearch-data:  # Persistent data volume for OpenSearch
