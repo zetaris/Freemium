@@ -67,3 +67,13 @@ docker-compose exec -it zetaris-db /scripts/generate_default_dev_users.sh
 ```
 a user `dev@account.com` will be added and password is `password`
 
+
+# Third party jdbc support
+
+User can download their own jdbc driver and copy it over to `customer_data/lib/jdbc` directory, those jars will be loaded to the platform when docker starts. 
+For example, on linux
+```
+mkdir -p customer_data/lib/jdbc
+cp your_jdbc.jar customer_data/lib/jdbc
+```
+Restart the zetaris-server container in docker console
