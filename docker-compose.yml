@@ -20,7 +20,7 @@ services:
 
 
   zetaris-server:
-    image: zetaris/lightning-server:v2.3.6.0-hotfix-latest
+    image: zetaris/lightning-server:v2.4.0.0-latest
     entrypoint: /home/zetaris/lightning/bin/start.sh
     restart: always
     depends_on:
@@ -58,8 +58,8 @@ services:
         target: /home/zetaris/lightning/bin/start.sh
 
   zetaris-api:
-    image: zetaris/lightning-api:v2.3.6.0-latest
-    entrypoint: bash /opt/lightning-api-2.3.6.0/bin/lightning-api
+    image: zetaris/lightning-api:v2.4.0.0-latest
+    entrypoint: bash /opt/lightning-api/bin/lightning-api
     restart: always
     depends_on:
       - zetaris-server 
@@ -79,7 +79,7 @@ services:
       - ./lightning/api/test_encryption:/test_encryption
 
   zetaris-gui:
-    image: zetaris/lightning-gui:v2.3.6.0-latest
+    image: zetaris/lightning-gui:v2.4.0.0-latest
     entrypoint: bash /home/zetaris/lightning-gui/bin/start.sh
     restart: always
     depends_on:
