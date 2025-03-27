@@ -117,7 +117,7 @@ services:
  
  
   ollama:
-    image: zetaris/ollama-models:latest
+    image: zetaris/ollama-mistral:latest
     ports:
       - "11434:11434"  # Expose Olllama port
     volumes:
