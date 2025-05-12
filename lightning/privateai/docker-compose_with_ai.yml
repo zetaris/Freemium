@@ -1,0 +1,158 @@
+version: '2'
+
+services:
+
+  zetaris-db:
+    command: [ "postgres", "-c", "log_statement=all" ]
+    image: postgres:15.1
+    hostname: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./datadir/pg:/var/lib/postgresql/data/pgdata
+      - ./lightning/db/postgres/initdb:/docker-entrypoint-initdb.d/
+      - ./lightning/db/postgres/scripts:/scripts
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - PGDATA=/var/lib/postgresql/data/pgdata
+
+
+  zetaris-server:
+    image: zetaris/lightning-server:v2.4.0.0-latest
+    entrypoint: /home/zetaris/lightning/bin/start.sh
+    restart: always
+    depends_on:
+      - zetaris-db
+    environment:
+      - ZSPARK_MASTER_URL=local[*]
+      - ZSPARK_DRIVER_CORES=1
+      - ZSPARK_EXECUTOR_CORES=1
+      - ZSPARK_DRIVER_MEM=4G
+      - ZSPARK_EXECUTOR_MEM=4G
+      - filesystem_staging=/home/zetaris/data
+      - cache_sync_enable=false
+      - default_admin_password=test_admin
+      - jdbc_url=jdbc:postgresql://zetaris-db:5432/metastore
+      - jdbc_driver_class=org.postgresql.Driver
+      - username=admin
+      - password=password
+      - hibernate.dialect=com.zetaris.lightning.sql.BlobPostgreSQLDialect
+      - hibernate.hbm2ddl.auto=validate
+      - auditLog_jdbc_url=jdbc:postgresql://zetaris-db:5432/audit
+      - auditLog_jdbc_driver_class=org.postgresql.Driver
+      - auditLog_username=admin
+      - auditLog_password=password
+      - auditLog_hibernate.dialect=com.zetaris.lightning.sql.BlobPostgreSQLDialect
+      - auditLog_hibernate.hbm2ddl.auto=validate
+      - base_endpoint=http://zetaris-api:8888/
+    ports:
+      - '10000:10000'
+      - '9998:9998'
+      - '4040:4040'
+    volumes:
+      - ./customer_data:/home/zetaris/data
+      - type: bind
+        source: ./lightning/server/start.sh
+        target: /home/zetaris/lightning/bin/start.sh
+
+  zetaris-api:
+    image: zetaris/lightning-api:v2.4.0.0-latest
+    entrypoint: bash /opt/lightning-api/bin/lightning-api
+    restart: always
+    depends_on:
+      - zetaris-server 
+    environment:
+      - METASTORE_DATABASE_URL=jdbc:postgresql://zetaris-db:5432/metastore?user=admin&password=password
+      - AUDIT_LOG_DATABASE_URL=jdbc:postgresql://zetaris-db:5432/audit?user=admin&password=password
+      - LIGHTNING_SERVER_URL=jdbc:zetaris:lightning@zetaris-server:10000
+      - NDP_DRIVER_PASSWORD=test_admin
+      - ENCRYPTION_LOCAL_PRIVATE_KEY_PATH=/test_encryption/private_key.der
+      - ENCRYPTION_LOCAL_PUBLIC_KEY_PATH=/test_encryption/public_key.der
+      - ALLOWED_ORIGINS=http://localhost:9000;http://localhost:9001
+
+    ports:
+      - '8888:8888'
+    volumes:
+      - ./customer_data:/home/zetaris/data
+      - ./lightning/api/test_encryption:/test_encryption
+
+  zetaris-gui:
+    image: zetaris/lightning-gui:v2.4.0.0-latest
+    entrypoint: bash /home/zetaris/lightning-gui/bin/start.sh
+    restart: always
+    depends_on:
+      - zetaris-server 
+      - zetaris-api 
+    ports:
+      - '9001:9001'
+    volumes:
+      - ./customer_data:/home/zetaris/data
+      - type: bind
+        source: ./lightning/gui/start.sh
+        target: /home/zetaris/lightning-gui/bin/start.sh
+    environment:
+      - ZFILESYSTEM_STAGING=/home/zetaris/data
+      - REST_SERVICE_URL=http://localhost:8888
+      - INTERNAL_REST_SERVICE_URL=http://zetaris-api:8888
+      - LIGHTNING_SERVER_URL=jdbc:zetaris:lightning@zetaris-server:10000
+      - NDP_DRIVER_PASSWORD=test_admin
+      - SHOW_BUILD_HASH=true
+
+  privateai:
+    image: zetaris/privateai:latest
+    command:  ["flask", "run", "-h", "0.0.0.0", "-p", "3001"]
+    env_file:
+      - .env
+    volumes:
+      - privateai:/app  # Mount your application code
+    ports:
+      - "3001:3001"  # Expose app port (adjust as needed)
+    environment:
+      - FLASK_APP=app.py  # Replace with your main Flask app file
+    depends_on:
+      - ollama
+      - opensearch
+ 
+ 
+  ollama:
+    image: zetaris/ollama-mistral:latest
+    ports:
+      - "11434:11434"  # Expose Olllama port
+    volumes:
+      - ollama:/root/.ollama  # Mount configuration directory (optional)
+    environment:
+      - gpus=all
+    container_name: ollama
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+ 
+ 
+  # OpenSearch
+  opensearch:
+    image: opensearchproject/opensearch:2.11.0
+    ports:
+      - "9200:9200"  # Expose OpenSearch port
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data  # Persistent data volume
+
+  # Digiavatar
+  digiavatar:
+    image: zetaris/digivatar:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - gpus=all
+    container_name : digiavatar
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+ 
+volumes:
+  opensearch-data:  # Persistent data volume for OpenSearch
+  ollama:
+  privateai:
