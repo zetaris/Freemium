@@ -1,5 +1,3 @@
-version: "2"
-
 services:
   zetaris-db:
     command: ["postgres", "-c", "log_statement=all"]
@@ -11,7 +9,6 @@ services:
     volumes:
       - ./datadir/pg:/var/lib/postgresql/data/pgdata
       - ./lightning/db/postgres/initdb:/docker-entrypoint-initdb.d/
-      - ./lightning/db/postgres/scripts:/scripts
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
@@ -90,3 +87,76 @@ services:
       - REST_SERVICE_URL=http://localhost:8888
       - INTERNAL_REST_SERVICE_URL=http://zetaris-api
       - LIGHTNING_SERVER_URL=jdbc:zetaris:lightning@zetaris-server:10000
+
+  ## PRIVATEAI SERVICES
+  privateai:
+    image: zetaris/privateai:latest
+    command: ["flask", "run", "-h", "0.0.0.0", "-p", "3001"]
+    env_file:
+      - ./.env
+    volumes:
+      - privateai:/app # Mount your application code
+    ports:
+      - "3001:3001" # Expose app port (adjust as needed)
+    environment:
+      - FLASK_APP=app.py # Replace with your main Flask app file
+    depends_on:
+      - ollama
+      - opensearch-cluster-master
+
+  # Tools
+  tools:
+    image: zetaris/genz-mcp:latest
+    container_name: tools
+    ports:
+      - "4200:4200"
+    volumes:
+      - privateai:/app/graphs
+
+  # Ollama
+  ollama:
+    image: zetaris/ollama-models:latest
+    ports:
+      - "11434:11434" # Expose Olllama port
+    volumes:
+      - ollama:/root/.ollama # Mount configuration directory (optional)
+    environment:
+      - gpus=all
+    container_name: ollama
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia ##make sure that Nvidia container toolkit is running and configured with docker runtime
+              count: 1
+              capabilities: [gpu]
+
+  # OpenSearch
+  opensearch-cluster-master:
+    image: opensearchproject/opensearch:2.11.0
+    ports:
+      - "9200:9200" # Expose OpenSearch port
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data # Persistent data volume
+
+  # Digiavatar
+  digiavatar:
+    image: zetaris/digivatar:digiconcierge
+    ports:
+      - "3000:3000"
+    environment:
+      - gpus=all
+    container_name: digiavatar
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+
+volumes:
+  opensearch-data: # Persistent data volume for OpenSearch
+  ollama:
+  privateai:
